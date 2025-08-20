@@ -1,4 +1,4 @@
-import { AppWindowIcon, CodeIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  useLoginUserMutation,
+  useRegisterUserMutation,
+} from "@/features/api/authApi";
+import { toast } from "sonner";
 
 export const Login = () => {
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
@@ -21,6 +26,25 @@ export const Login = () => {
     email: "",
     password: "",
   });
+
+  const [
+    registerUser,
+    {
+      data: registerData,
+      error: registerError,
+      isLoading: registerIsLoading,
+      isSuccess: registerIsSuccess,
+    },
+  ] = useRegisterUserMutation();
+  const [
+    loginUser,
+    {
+      data: loginData,
+      error: loginError,
+      isLoading: loginIsLoading,
+      isSuccess: loginIsSuccess,
+    },
+  ] = useLoginUserMutation();
 
   const OnChangeInputHandler = (
     e: { target: { name: any; value: any } },
@@ -34,10 +58,38 @@ export const Login = () => {
     }
   };
 
-  const handelRegistration = (type: string) =>{
-    const inputDate = type === "signup"? signupInput: loginInput;
-    console.log(inputDate);
+  const handelRegistration = async (type: string) => {
+    const inputData = type === "signup" ? signupInput : loginInput;
+    console.log(inputData);
+    const action = type === "signup" ? registerUser : loginUser;
+    await action(inputData);
+  };
+
+useEffect(() => {
+  if (registerIsSuccess && registerData) {
+    toast.success(registerData.message || "SignUp Successfully.");
   }
+}, [registerIsSuccess, registerData]);
+
+useEffect(() => {
+  if (registerError) {
+    toast.error("Register Failed.");
+  }
+}, [registerError]);
+
+useEffect(() => {
+  if (loginIsSuccess && loginData) {
+    toast.success(loginData.message || "Login Successfully.");
+  }
+}, [loginIsSuccess, loginData]);
+
+useEffect(() => {
+  if (loginError) {
+    toast.error("Login Failed.");
+  }
+}, [loginError]);
+
+
   return (
     <div className="flex justify-center items-center">
       <div className="flex w-full max-w-sm flex-col gap-6 mt-20">
@@ -63,7 +115,7 @@ export const Login = () => {
                     name="name"
                     id="signup-name"
                     value={signupInput.name}
-                    onChange={(e) => OnChangeInputHandler(e,"signup")}
+                    onChange={(e) => OnChangeInputHandler(e, "signup")}
                     placeholder="eg. Alex"
                     required={true}
                   />
@@ -75,7 +127,7 @@ export const Login = () => {
                     name="email"
                     id="signup-email"
                     value={signupInput.email}
-                    onChange={(e) => OnChangeInputHandler(e,"signup")}
+                    onChange={(e) => OnChangeInputHandler(e, "signup")}
                     placeholder="eg. alex@gmail.com"
                     required={true}
                   />
@@ -87,14 +139,27 @@ export const Login = () => {
                     name="password"
                     id="signup-password"
                     value={signupInput.password}
-                    onChange={(e) => OnChangeInputHandler(e,"signup")}
+                    onChange={(e) => OnChangeInputHandler(e, "signup")}
                     placeholder="eg. xyz"
                     required={true}
                   />
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={()=>handelRegistration("signup")}>Signup</Button>
+                <Button
+                  disabled={registerIsLoading}
+                  onClick={() => handelRegistration("signup")}
+                >
+                  {registerIsLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4, animate-spin">
+                        Registering
+                      </Loader2>
+                    </>
+                  ) : (
+                    "Signup"
+                  )}
+                </Button>
               </CardFooter>
             </Card>
           </TabsContent>
@@ -115,7 +180,7 @@ export const Login = () => {
                     name="email"
                     id="login-email"
                     value={loginInput.email}
-                    onChange={(e) => OnChangeInputHandler(e,"login")}
+                    onChange={(e) => OnChangeInputHandler(e, "login")}
                     placeholder="eg. alex@gmail.com"
                     required={true}
                   />
@@ -126,7 +191,7 @@ export const Login = () => {
                     type="password"
                     name="password"
                     value={loginInput.password}
-                    onChange={(e,) => OnChangeInputHandler(e,"login")}
+                    onChange={(e) => OnChangeInputHandler(e, "login")}
                     id="login-password"
                     placeholder="eg. xyz"
                     required={true}
@@ -134,7 +199,20 @@ export const Login = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={()=>handelRegistration("login")}>Login</Button>
+                <Button
+                  disabled={loginIsLoading}
+                  onClick={() => handelRegistration("login")}
+                >
+                  {loginIsLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4, animate-spin">
+                        Logging In
+                      </Loader2>
+                    </>
+                  ) : (
+                    "Login"
+                  )}
+                </Button>
               </CardFooter>
             </Card>
           </TabsContent>
