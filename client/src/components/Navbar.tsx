@@ -20,8 +20,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import DarkMode from "./DarkMode";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
 
 export default function Navbar() {
