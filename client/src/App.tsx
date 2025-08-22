@@ -1,14 +1,16 @@
-import './App.css'
-import { Button } from './components/ui/button'
-import { Login } from './pages/login'
-
+import "./App.css";
+import Navbar from "./components/Navbar";
+import { Login } from "./pages/login";
+import { ThemeProvider } from "@/components/theme-provider";
 function App() {
-
   return (
-   <main>
-    <Login />
-   </main>
-  )
+    <main>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Navbar />
+        <Login />
+      </ThemeProvider>
+    </main>
+  );
 }
 
-export default App
+export default App;
