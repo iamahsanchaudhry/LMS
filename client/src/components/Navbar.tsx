@@ -18,7 +18,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "./ui/button"; 
+import { Button } from "./ui/button";
 import DarkMode from "./DarkMode";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
@@ -26,6 +26,7 @@ import { Separator } from "./ui/separator";
 
 export default function Navbar() {
   const user = true;
+  const role = 'instructor';
   return (
     <div className="h-16 dark:bg-[#0A0A0A] bg-white border-b dark:border-b-gray-800 border-b-gray-200 fixed top-0 left-0 right-0 duration-300 z-10">
       {/*Desktop*/}
@@ -52,8 +53,14 @@ export default function Navbar() {
                 <DropdownMenuItem>My Learning</DropdownMenuItem>
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Logout</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                {role === "instructor" ? (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="w-full mt-1 text-secondary dark:text-primary bg-indigo-900 dark:bg-indigo-600 hover:bg-indigo-800 focus:bg-indigo-800 focus:text-secondary dark:hover:bg-indigo-700 dark:focus:bg-indigo-700 dark:focus:text-primary">
+                      Dashboard
+                    </DropdownMenuItem>
+                  </>
+                ) : null}
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
@@ -67,15 +74,17 @@ export default function Navbar() {
       </div>
       {/* Mobile Device */}
       <div className="flex md:hidden items-center justify-between px-4 h-full ">
-        <h1 className="font-extrabold tex-2xl" >E-Learning</h1>
-        <MobileNavbar />
+        <div className="flex flex-row justify-between items-center gap-2">
+          <School size={"30"} />
+          <h1 className="font-extrabold tex-2xl pt-2">E-Learning</h1>
+        </div>
+        <MobileNavbar role={role} />
       </div>
-      
     </div>
   );
 }
 
-const MobileNavbar = () => {
+const MobileNavbar = ({ role }: any) => {
   return (
     <div>
       <Sheet>
@@ -89,18 +98,36 @@ const MobileNavbar = () => {
           </Button>
         </SheetTrigger>
 
-        <SheetContent side="left" className="flex flex-col" >
+        <SheetContent side="left" className="flex flex-col">
           <SheetHeader className="flex flex-row items-center justify-between mt-2">
-            <SheetTitle className="text-lg font-bold">E-Learning</SheetTitle>
+            <div className="flex flex-row justify-between items-center gap-2">
+              <School size={"30"} />
+              <SheetTitle className="text-lg font-extrabold pt-2">
+                E-Learning
+              </SheetTitle>
+            </div>
+
             <DarkMode />
           </SheetHeader>
 
           <Separator className="my-1" />
 
           <nav className="flex flex-col space-y-4 mx-4 items-start">
-            <span className="cursor-pointer hover:underline">My Learning</span>
+            <span className="cursor-pointer content-center hover:underline">
+              My Learning
+            </span>
+            <Separator />
             <span className="cursor-pointer hover:underline">Profile</span>
+            <Separator />
             <span className="cursor-pointer hover:underline">Log out</span>
+            {role === "instructor" ? (
+              <>
+                <Separator />
+                <Button className="w-full mt-1 text-secondary dark:text-primary bg-indigo-900 dark:bg-indigo-600 hover:bg-indigo-800 focus:bg-indigo-800 focus:text-secondary dark:hover:bg-indigo-700 dark:focus:bg-indigo-700 dark:focus:text-primary">
+                  DashBoard
+                </Button>
+              </>
+            ) : null}
           </nav>
 
           <SheetFooter className="mt-auto">
