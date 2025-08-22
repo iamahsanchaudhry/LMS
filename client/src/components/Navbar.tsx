@@ -21,10 +21,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import DarkMode from "./DarkMode";
 import { Separator } from "./ui/separator";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const user = true;
-  const role = 'instructor';
+  const role = "instructor";
   return (
     <div className="h-16 dark:bg-[#0A0A0A] bg-white border-b dark:border-b-gray-800 border-b-gray-200 fixed top-0 left-0 right-0 duration-300 z-10">
       {/*Desktop*/}
@@ -48,8 +49,10 @@ export default function Navbar() {
               <DropdownMenuContent>
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>My Learning</DropdownMenuItem>
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="my-learning">My Learning</Link>{" "}
+                </DropdownMenuItem>
+                <DropdownMenuItem><Link to="profile">Profile</Link> </DropdownMenuItem>
                 <DropdownMenuItem>Logout</DropdownMenuItem>
                 {role === "instructor" ? (
                   <>
@@ -112,10 +115,12 @@ const MobileNavbar = ({ role }: any) => {
 
           <nav className="flex flex-col space-y-4 mx-4 items-start">
             <span className="cursor-pointer content-center hover:underline">
-              My Learning
+              <Link to="my-learning">My Learning</Link>
             </span>
             <Separator />
-            <span className="cursor-pointer hover:underline">Profile</span>
+            <span className="cursor-pointer hover:underline">
+              <Link to="profile">Profile</Link>{" "}
+            </span>
             <Separator />
             <span className="cursor-pointer hover:underline">Log out</span>
             {role === "instructor" ? (
