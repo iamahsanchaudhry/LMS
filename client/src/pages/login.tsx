@@ -18,6 +18,7 @@ import {
   useRegisterUserMutation,
 } from "@/features/api/authApi";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
@@ -80,6 +81,7 @@ useEffect(() => {
 useEffect(() => {
   if (loginIsSuccess && loginData) {
     toast.success(loginData.message || "Login Successfully.");
+    navigate("/");
   }
 }, [loginIsSuccess, loginData]);
 
@@ -88,7 +90,7 @@ useEffect(() => {
     toast.error("Login Failed.");
   }
 }, [loginError]);
-
+const navigate = useNavigate();
 
   return (
     <div className="flex justify-center items-center">
