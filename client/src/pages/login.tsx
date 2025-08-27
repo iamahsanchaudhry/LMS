@@ -95,7 +95,7 @@ const navigate = useNavigate();
   return (
     <div className="flex justify-center items-center">
       <div className="flex w-full max-w-sm flex-col gap-6 mt-20">
-        <Tabs defaultValue="signup">
+        <Tabs defaultValue="login">
           <TabsList className="w-full gap-1   ">
             <TabsTrigger value="signup">Signup</TabsTrigger>
             <TabsTrigger value="login">Login</TabsTrigger>
@@ -154,9 +154,8 @@ const navigate = useNavigate();
                 >
                   {registerIsLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4, animate-spin">
-                        Registering
-                      </Loader2>
+                      <Loader2 className="mr-2 h-4, animate-spin"/>
+                      Registering
                     </>
                   ) : (
                     "Signup"
@@ -207,9 +206,8 @@ const navigate = useNavigate();
                 >
                   {loginIsLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4, animate-spin">
-                        Logging In
-                      </Loader2>
+                      <Loader2 className="mr-2 h-4, animate-spin"/>
+                      Logging In
                     </>
                   ) : (
                     "Login"
