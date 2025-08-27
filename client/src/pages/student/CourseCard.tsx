@@ -5,7 +5,7 @@ import React from "react";
 
 export default function CourseCard() {
   return (
-    <Card className="overflow-hidden rounded-lg py-0 gap-3 dark:bg-gray-800 bg-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+    <Card className="overflow-hidden rounded-lg py-0 gap-3 dark:bg-gray-800 bg-white shadow-lg hover:shadow-cyan-500 dark:hover:shadow-cyan-800 transform hover:scale-105 transition-all duration-300">
       <div className="relative">
         <img
           src="https://img-c.udemycdn.com/course/750x422/5528078_095a_8.jpg"

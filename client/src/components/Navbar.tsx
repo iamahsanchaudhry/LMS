@@ -21,11 +21,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import DarkMode from "./DarkMode";
 import { Separator } from "./ui/separator";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useLogoutUserMutation } from "@/features/api/authApi";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function Navbar() {
   const user = true;
   const role = "instructor";
+  const navigate = useNavigate();
+  const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(data?.message || "User log out.");
+      navigate("/login");
+    }
+  }, [isSuccess]);
+
+  const logoutHandler = async () => {
+    await logoutUser().unwrap();
+  };
   return (
     <div className="h-16 dark:bg-[#0A0A0A] bg-white border-b dark:border-b-gray-800 border-b-gray-200 fixed top-0 left-0 right-0 duration-300 z-10">
       {/*Desktop*/}
@@ -52,8 +68,12 @@ export default function Navbar() {
                 <DropdownMenuItem>
                   <Link to="my-learning">My Learning</Link>{" "}
                 </DropdownMenuItem>
-                <DropdownMenuItem><Link to="profile">Profile</Link> </DropdownMenuItem>
-                <DropdownMenuItem>Logout</DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="profile">Profile</Link>{" "}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={logoutHandler}>
+                  Logout
+                </DropdownMenuItem>
                 {role === "instructor" ? (
                   <>
                     <DropdownMenuSeparator />
@@ -79,13 +99,13 @@ export default function Navbar() {
           <School size={"30"} />
           <h1 className="font-extrabold tex-2xl pt-2">E-Learning</h1>
         </div>
-        <MobileNavbar role={role} />
+        <MobileNavbar role={role} logoutHandler={logoutHandler} />
       </div>
     </div>
   );
 }
 
-const MobileNavbar = ({ role }: any) => {
+const MobileNavbar = ({ role, logoutHandler }: any) => {
   return (
     <div>
       <Sheet>
@@ -122,7 +142,13 @@ const MobileNavbar = ({ role }: any) => {
               <Link to="profile">Profile</Link>{" "}
             </span>
             <Separator />
-            <span className="cursor-pointer hover:underline">Log out</span>
+            <Button
+              variant="ghost"
+              className="cursor-pointer hover:underline pl-0 font-normal text-lg outline-1"
+              onClick={logoutHandler}
+            >
+              Log out
+            </Button>
             {role === "instructor" ? (
               <>
                 <Separator />

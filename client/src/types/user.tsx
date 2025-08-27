@@ -10,6 +10,11 @@ export interface UserType {
   updatedAt: string;
 }
 
+export interface ProfileResponse {
+  success: boolean;
+  user: UserType;
+}
+
 export interface LoginResponse {
   success: boolean;
   message: string;
