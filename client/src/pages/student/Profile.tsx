@@ -18,12 +18,12 @@ import {
   useLoadUserQuery,
   useUpdateUserMutation,
 } from "@/features/api/authApi";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { UserType } from "@/types/user";
 
 export default function Profile() {
-const { data: userData, isLoading } = useLoadUserQuery();
+const { data: userData, isLoading,refetch } = useLoadUserQuery();
 const [
   updateUser,
   {
@@ -62,7 +62,7 @@ useEffect(() => {
   if (isSuccess && updateUserData) {
     toast.success(updateUserData?.message || "Profile updated.");
     if (updateUserData?.user) {
-      setUser(updateUserData.user)
+      refetch();
     };
   }
 
@@ -78,7 +78,9 @@ useEffect(() => {
   }
 }, [userData]);
 
-
+  useEffect(()=>{
+  refetch();
+  },[])
   if (isLoading) return <ProfileSkeleton />;
   return (
     <div className="max-w-4xl mx-auto px-4 my-24">
@@ -89,7 +91,7 @@ useEffect(() => {
             <AvatarImage
               src={user?.photoUrl || "https://github.com/shadcn.png"}
             />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback>PIC</AvatarFallback>
           </Avatar>
         </div>
         <div className="mt-2">

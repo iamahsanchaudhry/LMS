@@ -42,6 +42,7 @@ export default function Navbar() {
 
   const logoutHandler = async () => {
     await logoutUser().unwrap();
+    navigate("/login");
   };
   return (
     <div className="h-16 dark:bg-[#0A0A0A] bg-white border-b dark:border-b-gray-800 border-b-gray-200 fixed top-0 left-0 right-0 duration-300 z-10">
@@ -80,7 +81,7 @@ export default function Navbar() {
                 <DropdownMenuItem onClick={logoutHandler}>
                   Logout
                 </DropdownMenuItem>
-                {role === "instructor" ? (
+                {user?.role === "instructor" ? (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="w-full mt-1 text-secondary dark:text-primary bg-indigo-900 dark:bg-indigo-600 hover:bg-indigo-800 focus:bg-indigo-800 focus:text-secondary dark:hover:bg-indigo-700 dark:focus:bg-indigo-700 dark:focus:text-primary">

@@ -19,6 +19,7 @@ import {
 } from "@/features/api/authApi";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 export const Login = () => {
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
@@ -28,6 +29,7 @@ export const Login = () => {
     password: "",
   });
 
+  const navigate = useNavigate();
   const [
     registerUser,
     {
@@ -66,31 +68,43 @@ export const Login = () => {
     await action(inputData);
   };
 
-useEffect(() => {
-  if (registerIsSuccess && registerData) {
-    toast.success(registerData.message || "SignUp Successfully.");
-  }
-}, [registerIsSuccess, registerData]);
+  useEffect(() => {
+    if (registerIsSuccess && registerData) {
+      toast.success(registerData.message || "Register Successfully.");
+      navigate("/");
+    }
+  }, [registerIsSuccess, registerData]);
 
-useEffect(() => {
-  if (registerError) {
-    toast.error("Register Failed.");
-  }
-}, [registerError]);
+  useEffect(() => {
+    if (registerError) {
+      const err = registerError as FetchBaseQueryError;
+      if (err.data && typeof err.data === "object") {
+        const serverError = err.data as { success: boolean; message: string };
+        toast.error(serverError.message || "Registration Failed.");
+      } else {
+        toast.error("Registration Failed.");
+      }
+    }
+  }, [registerError]);
 
-useEffect(() => {
-  if (loginIsSuccess && loginData) {
-    toast.success(loginData.message || "Login Successfully.");
-    navigate("/");
-  }
-}, [loginIsSuccess, loginData]);
+  useEffect(() => {
+    if (loginIsSuccess && loginData) {
+      toast.success(loginData.message || "Login Successfully.");
+      navigate("/");
+    }
+  }, [loginIsSuccess, loginData]);
 
-useEffect(() => {
-  if (loginError) {
-    toast.error("Login Failed.");
-  }
-}, [loginError]);
-const navigate = useNavigate();
+  useEffect(() => {
+    if (loginError) {
+      const err = loginError as FetchBaseQueryError;
+      if (err.data && typeof err.data === "object") {
+        const serverError = err.data as { success: boolean; message: string };
+        toast.error(serverError.message || "Login failed.");
+      } else {
+        toast.error("Login failed.");
+      }
+    }
+  }, [loginError]);
 
   return (
     <div className="flex justify-center items-center">
@@ -154,7 +168,7 @@ const navigate = useNavigate();
                 >
                   {registerIsLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4, animate-spin"/>
+                      <Loader2 className="mr-2 h-4, animate-spin" />
                       Registering
                     </>
                   ) : (
@@ -206,7 +220,7 @@ const navigate = useNavigate();
                 >
                   {loginIsLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4, animate-spin"/>
+                      <Loader2 className="mr-2 h-4, animate-spin" />
                       Logging In
                     </>
                   ) : (

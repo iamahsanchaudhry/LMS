@@ -1,4 +1,4 @@
-import {User} from "../models/user.model.js";
+import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
 import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary.js";
@@ -21,15 +21,19 @@ export const register = async (req, res) => {
       });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({
+    const newUser = await User.create({
       name,
       email,
       password: hashedPassword,
     });
-    return res.status(201).json({
-      success: true,
-      message: "Account Created Successfully.",
-    });
+    //returning new user created
+    const userResponse = await User.findById(newUser._id).select("-password");
+    generateToken(res, userResponse, "Account created successfully.");
+
+    // return res.status(201).json({
+    //   success: true,
+    //   message: "Account Created Successfully.",
+    // });
   } catch (error) {
     console.log("Error: ", error);
     return res.status(500).json({
@@ -41,7 +45,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const {email, password } = req.body;
+    const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -55,14 +59,14 @@ export const login = async (req, res) => {
         message: "Incorrect email or password.",
       });
     }
-    const isPasswordMatch = await bcrypt.compare(password,user.password);
-    if(!isPasswordMatch){
-        return res.status(400).json({
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.status(400).json({
         success: false,
         message: "Incorrect email or password.",
       });
     }
-    generateToken(res,user,`Welcome back ${user.name}`);
+    generateToken(res, user, `Welcome back ${user.name}`);
   } catch (error) {
     console.log("Error: ", error);
     return res.status(500).json({
@@ -72,12 +76,12 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = async (req,res) =>{
+export const logout = async (req, res) => {
   try {
-    return res.status(200).cookie("token","",{maxAge:0}).json({
-      message:"Logged out succesfully.",
-      success:true
-    })
+    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+      message: "Logged out succesfully.",
+      success: true,
+    });
   } catch (error) {
     console.log("Error: ", error);
     return res.status(500).json({
@@ -85,73 +89,74 @@ export const logout = async (req,res) =>{
       message: "Failed to logout",
     });
   }
-}
+};
 
-export const getUserProfile = async (req,res) =>{
+export const getUserProfile = async (req, res) => {
   try {
     const userId = req.id;
     const user = await User.findById(userId).select("-password");
-    if(!user){
+    if (!user) {
       res.status(404).json({
-        message:"Profile not found.",
-        success:false
-      })
+        message: "Profile not found.",
+        success: false,
+      });
     }
     return res.status(200).json({
-      success:true,
-      user
-    })
+      success: true,
+      user,
+    });
   } catch (error) {
     console.log("Error: ", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to load user",
+      message: "Failed to load user profile",
     });
   }
-}
+};
 
-export const UpdateProfile = async (req,res) =>{
+export const UpdateProfile = async (req, res) => {
   try {
     const userId = req.id;
-    const {name} = req.body;
+    const { name } = req.body;
     const profilePhoto = req.file;
 
     const user = await User.findById(userId);
-    if(!user){
+    if (!user) {
       return res.status(404).json({
-        message:"User not found.",
-        success:false
-      })
+        message: "User not found.",
+        success: false,
+      });
     }
     //extract public id of the old image from url if it exists
-    if(user.photoUrl){
+    if (user.photoUrl) {
       const publicId = user.photoUrl.split("/").pop().split(".")[0]; //extract publicId
       deleteMediaFromCloudinary(publicId);
     }
-    //upload new photo 
+    //upload new photo
     const cloudResponse = await uploadMedia(profilePhoto.path);
-      if (!cloudResponse || !cloudResponse.secure_url) {
-        return res.status(400).json({
-          success: false,
-          message: "Failed to upload new profile photo.",
-        });
-      }
+    if (!cloudResponse || !cloudResponse.secure_url) {
+      return res.status(400).json({
+        success: false,
+        message: "Failed to upload new profile photo.",
+      });
+    }
 
     const photoUrl = cloudResponse.secure_url;
-    const updatedData = {name, photoUrl};
-    const updatedUser = await User.findByIdAndUpdate(userId,updatedData,{new:true}).select("-password");
-    
+    const updatedData = { name, photoUrl };
+    const updatedUser = await User.findByIdAndUpdate(userId, updatedData, {
+      new: true,
+    }).select("-password");
+
     return res.status(200).json({
-      success:true,
-      user:updatedUser,
-      message:"profile updated succesfully."
-    })
+      success: true,
+      user: updatedUser,
+      message: "profile updated succesfully.",
+    });
   } catch (error) {
     console.log("Error: ", error);
     return res.status(500).json({
       success: false,
       message: "Failed to update profile",
     });
-    
   }
-}
+};
